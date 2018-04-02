@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Ahogado Paises Del Mundo</string>
+    <string name="title_activity_second">SecondActivity</string>
+    <string name="play">Play</string>
+    <string name="creditos">Creditos</string>
+    <string name="puntos_0">Puntos: 0</string>
+    <string name="vidas_7">Vidas: 7</string>
+    <string name="ayuda">Ayuda</string>
+    <string name="you_win">YOU WIN</string>
+    <string name="menu">Menu</string>
+    <string name="todo">TODO</string>
+    <string name="nul">Null</string>
+    <string name="sigueinte">Sigueinte</string>
+    <string name="you_lose">YOU LOSE</string>
+    <string name="z">Z</string>
+    <string name="y">Y</string>
+    <string name="siguiente">Siguiente</string>
+</resources>

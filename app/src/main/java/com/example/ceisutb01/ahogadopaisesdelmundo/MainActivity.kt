@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import java.util.Random
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.widget.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -15,10 +16,11 @@ import android.graphics.BitmapFactory
 import android.graphics.Bitmap
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.file.FileToStreamDecoder
-import android.graphics.drawable.PictureDrawable
-import com.bumptech.glide.GenericRequestBuilder
-
-
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
+import android.graphics.Color
+import android.os.Handler
+import android.widget.Toast
 
 
 
@@ -32,13 +34,13 @@ class MainActivity : Activity(), View.OnClickListener {
     var inicial=0
     var final=14
 
-    var secion=1
+    var seccion=1
 
     val random = Random()
     var num = random.nextInt(final - inicial)
     var textviews = ArrayList<TextView>()
     var termino = 0
-    var NumVidas = 7
+    var NumVidas = 5
     var Tpuntos = 0
     var auxPuntos = 5
     var Palabra=letter[num]
@@ -51,6 +53,10 @@ class MainActivity : Activity(), View.OnClickListener {
     var regions = ArrayList<String>()
     var flags = ArrayList<String>()
 
+    var numNivel=0
+
+    //val agua= arrayOf(Agua1 as TextView,Agua2 as TextView,Agua3 as TextView,Agua4 as TextView,Agua5 as TextView,Agua5 as TextView,Agua6 as TextView,Agua71 as TextView,Agua72 as TextView,Agua73 as TextView)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -60,6 +66,8 @@ class MainActivity : Activity(), View.OnClickListener {
         var prueba= Prueba as TextView
 
         var reiniciar=intent.extras.getBoolean("Reiniciar")
+
+        var continuar=intent.extras.getBoolean("Continuar")
 
         conInternet=intent.extras.getBoolean("conInternet")
 
@@ -75,18 +83,15 @@ class MainActivity : Activity(), View.OnClickListener {
             inicial=intent.extras.getInt("Init")
             final=intent.extras.getInt("End")
             Tpuntos=intent.extras.getInt("Score")
-            secion=intent.extras.getInt("Secion")
+            seccion=intent.extras.getInt("Secion")
 
-            prueba.text=inicial.toString()
+            //prueba.text=inicial.toString()
             var puntitos = Puntos as TextView
             puntitos.text = "Puntos: " + Tpuntos.toString()
             //prueba.text=Tpuntos.toString()
 
-            if(inicial>=60){
-                prueba.text="Felicidades, Ganaste el juego"
-                onStop()
-            }
 
+            guardarPreferencias()
 
             if(conInternet){
                 nombre=SetWordWhitInternet()
@@ -100,17 +105,33 @@ class MainActivity : Activity(), View.OnClickListener {
                 nombre=letter[num]
             }
         }else{
+            var puntitos = Puntos as TextView
+
+            if(continuar){
+                cargarPreferencias()
+            }else{
+                guardarPreferencias()
+            }
+
+            num = (random.nextInt(final - inicial)) + inicial
+            puntitos.text = "Puntos: " + Tpuntos.toString()
+
             nombre=letter[num]
         }
 
+        numNivel=(((final+1)/15)*2)-3+seccion
+        numNivel+=1
+        prueba.text="Nivel "+numNivel
+
         if(!conInternet){
             Palabra=nombre
-            prueba.text=nombre
+            //prueba.text=nombre
             init(Palabra.length)
         }else{
             nombre=SetWordWhitInternet()
             nombre=nombre.toUpperCase()
             Palabra=nombre
+            //prueba.text=nombre
             init(Palabra.length)
             //prueba.text=nombre
 
@@ -119,44 +140,38 @@ class MainActivity : Activity(), View.OnClickListener {
 
         Menu2.setOnClickListener {
             val boton_vs = Intent(this, Main2Activity::class.java)
+            boton_vs.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(boton_vs)
             finish()
         }
         Menu.setOnClickListener {
             val boton_vs = Intent(this, Main2Activity::class.java)
+            boton_vs.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(boton_vs)
             finish()
         }
         Siguente.setOnClickListener {
+            if((numNivel)>=8){
+                Siguente.visibility=View.INVISIBLE
+                prueba.text="Felicidades, Ganaste el juego"
 
-            val boton_vs = Intent(this, MainActivity::class.java)
-            if(secion==2){
-                inicial=final+1
-                final=inicial+14
-                secion=1
+                GanasteJuego()
+
+                inicial=0
+                final=14
+                Tpuntos=0
+                seccion=1
+
+                guardarPreferencias()
             }else{
-                secion=2
+                SigORein()
             }
-            boton_vs.putExtra("conInternet", conInternet)
-            if(conInternet){
-                boton_vs.putExtra("names",names)
-                boton_vs.putExtra("capitals",capitals)
-                boton_vs.putExtra("regions",regions)
-                boton_vs.putExtra("flags",flags)
-            }
-            boton_vs.putExtra("Pais", Palabra)
-            boton_vs.putExtra("Reiniciar", true)
-            boton_vs.putExtra("Init", inicial)
-            boton_vs.putExtra("End", final)
-            boton_vs.putExtra("Score", Tpuntos)
-            boton_vs.putExtra("Secion", secion)
 
-
-            startActivity(boton_vs)
-            finish()
         }
+
         Reiniciar.setOnClickListener {
-            finish()
+            SigORein()
+            //finish()
             //m.selectPais()
         }
         Ayuda.setOnClickListener {
@@ -165,9 +180,48 @@ class MainActivity : Activity(), View.OnClickListener {
             verificaGano()
         }
     }
+
+    fun GanasteJuego() {
+        val respuesta2 = textend2 as TextView
+        val respuesta3 = textend3 as TextView
+        val respuesta = textend as TextView
+        val winL = youwintext as TextView
+
+        Glide.with(this).load(R.mipmap.ic_trophy_gold).into(flag)
+        winL.text="¡FELICITACIONES!"
+        respuesta.text="¡Eres un GENIO!"
+        respuesta2.text="¡Haz aprobado todos los niveles!"
+        respuesta3.text="Total puntos: "+Tpuntos
+
+        flag.visibility=View.VISIBLE
+
+    }
+
+    fun SigORein(){
+        val boton_vs = Intent(this, MainActivity::class.java)
+        boton_vs.putExtra("conInternet", conInternet)
+        if(conInternet){
+            boton_vs.putExtra("names",names)
+            boton_vs.putExtra("capitals",capitals)
+            boton_vs.putExtra("regions",regions)
+            boton_vs.putExtra("flags",flags)
+        }
+        boton_vs.putExtra("Pais", Palabra)
+        boton_vs.putExtra("Reiniciar", true)
+        boton_vs.putExtra("Init", inicial)
+        boton_vs.putExtra("End", final)
+        boton_vs.putExtra("Score", Tpuntos)
+        boton_vs.putExtra("Secion", seccion)
+        boton_vs.putExtra("Continuar",false)
+
+
+        startActivity(boton_vs)
+        onDestroy()
+        finish()
+    }
+
     fun SetWordWhitInternet():String{
-        num=(((final+1)/15)*2)-3+secion
-        var prueba= Prueba as TextView
+        num=(((final+1)/15)*2)-3+seccion
         return names[num]
     }
 
@@ -198,8 +252,9 @@ class MainActivity : Activity(), View.OnClickListener {
         val For_Letter = ForLetter as LinearLayout
         for (i in 0..number - 1) {
             val tv_dynamic = TextView(this)
-            tv_dynamic.textSize = 30f
+            tv_dynamic.textSize = 25f
             tv_dynamic.text = "__ "
+            //tv_dynamic.setTextColor(Color.WHITE)
             For_Letter.addView(tv_dynamic)
             textviews.add(tv_dynamic)
         }
@@ -245,13 +300,33 @@ class MainActivity : Activity(), View.OnClickListener {
         var vidas = Vidas as TextView
         NumVidas = NumVidas - 1
         vidas.text = "Vidas: " + NumVidas.toString()
-        if (NumVidas <= 0) {
-            val loseL = youlosetext as TextView
-            val venI = VenI as ImageView
 
-            venI.visibility = View.VISIBLE
-            loseL.visibility = View.VISIBLE
-            Buttonoff(false)
+        if(NumVidas==4){
+            Agua2.visibility=View.VISIBLE
+        }else if(NumVidas==3) {
+            Agua2.visibility = View.INVISIBLE
+            Agua4.visibility = View.VISIBLE
+        }else if(NumVidas==2){
+            Agua4.visibility=View.INVISIBLE
+            Agua5.visibility=View.VISIBLE
+        }else if(NumVidas==1){
+            Agua5.visibility=View.INVISIBLE
+            Agua6.visibility=View.VISIBLE
+        }else if(NumVidas==0){
+            Agua6.visibility=View.INVISIBLE
+            Agua71.visibility=View.VISIBLE
+            Handler().postDelayed(Runnable {
+                Agua71.visibility=View.INVISIBLE
+                Agua72.visibility=View.VISIBLE
+            },100)
+            Handler().postDelayed(Runnable {
+                val loseL = youlosetext as TextView
+                val venI = VenI as ImageView
+
+                venI.visibility = View.VISIBLE
+                loseL.visibility = View.VISIBLE
+                Buttonoff(false)
+            },300)
         }
     }
 
@@ -263,8 +338,8 @@ class MainActivity : Activity(), View.OnClickListener {
             venI.visibility = View.VISIBLE
             winL.visibility = View.VISIBLE
 
-            var prueba= Prueba as TextView
-            prueba.text=(final+1).toString()
+            //var prueba= Prueba as TextView
+            //prueba.text=(final+1).toString()
 
             auxPuntos = ((final+1)/15)*(50)
             Tpuntos=Tpuntos+auxPuntos
@@ -275,11 +350,33 @@ class MainActivity : Activity(), View.OnClickListener {
         }
     }
 
+    fun guardarPreferencias() {
+        val prefs = getSharedPreferences("preferencias", Context.MODE_PRIVATE)
+        val editor = prefs.edit()
+        editor.putString("puntos",Tpuntos.toString())
+        editor.putString("i", inicial.toString())
+        editor.putString("f", final.toString())
+        editor.putString("s", seccion.toString())
+        editor.commit()
+        //Toast.makeText(this, "guardando preferencias", Toast.LENGTH_SHORT).show()
+    }
+
+    //cargar configuración aplicación Android usando SharedPreferences
+    fun cargarPreferencias() {
+        val prefs = getSharedPreferences("preferencias", Context.MODE_PRIVATE)
+        inicial = prefs.getString("i", "0").toInt()
+        final = prefs.getString("f","14").toInt()
+        Tpuntos=prefs.getString("puntos","0").toInt()
+        seccion=prefs.getString("s","1").toInt()
+       // Toast.makeText(this, preferencias1, Toast.LENGTH_SHORT).show()
+    }
+
     fun Buttonoff(gano: Boolean) {
         val menu = Menu as Button
         val ayuda = Ayuda as Button
         val For_Letterabc = Vocales as LinearLayout
         val For_Letterabc2 = LetrasABC as LinearLayout
+
 
         val respuesta2= textend2 as TextView
         val respuesta3= textend3 as TextView
@@ -291,18 +388,36 @@ class MainActivity : Activity(), View.OnClickListener {
         val reiniciar = Reiniciar as Button
         val Flag = flag as ImageView
 
-        var prueba= Prueba as TextView
+        //var prueba= Prueba as TextView
 
         menu.visibility = View.INVISIBLE
         ayuda.visibility = View.INVISIBLE
 
         menu2.visibility = View.VISIBLE
-        if(gano) {
+        if(gano){
             respuesta.text="Exacto, la respuesta es "+Palabra
             sigieunte.visibility = View.VISIBLE
+
+            if(numNivel<8) {
+                if (seccion == 2) {
+                    inicial = final + 1
+                    final = inicial + 14
+                    seccion = 1
+                } else {
+                    seccion = 2
+                }
+            }
         }else{
             respuesta.text="La respuesta es "+Palabra
-            reiniciar.visibility=View.VISIBLE
+            if(!conInternet) {
+                reiniciar.visibility = View.VISIBLE
+            }
+
+            inicial=0
+            final=14
+            Tpuntos=0
+            seccion=1
+
         }
 
         if(conInternet){
@@ -310,18 +425,19 @@ class MainActivity : Activity(), View.OnClickListener {
             respuesta2.text="Capital: "+capitals[num]
             respuesta3.text="Region: "+regions[num]
 
-            prueba.text=flags[num]
+            //prueba.text=flags[num]
             var url="http://flagpedia.net/data/flags/w580/"+flags[num].toLowerCase()+".png"
             Glide.with(this).load(url).into(flag)
 
             Flag.visibility=View.VISIBLE
         }else{
             if(gano) {
-                respuesta2.text = "¡FELICIDADES!"
+                respuesta2.text = "¡GENIAL!"
                 respuesta3.text = "¡Continua al siguiente nivel!"
             }else{
                 respuesta2.text = "¡Que mal!"
                 respuesta3.text = "¡Haz perdido todas tus vidas!"
+
             }
         }
         respuesta2.visibility=View.VISIBLE
@@ -333,6 +449,7 @@ class MainActivity : Activity(), View.OnClickListener {
 
         respuesta.visibility=View.VISIBLE
 
+        guardarPreferencias()
     }
 
     fun setBtn() {
@@ -350,6 +467,7 @@ class MainActivity : Activity(), View.OnClickListener {
         buttonL.setOnClickListener(this)
         buttonM.setOnClickListener(this)
         buttonN.setOnClickListener(this)
+        buttonNI.setOnClickListener(this)
         buttonO.setOnClickListener(this)
         buttonP.setOnClickListener(this)
         buttonQ.setOnClickListener(this)
@@ -373,5 +491,17 @@ class MainActivity : Activity(), View.OnClickListener {
                 "Z" to "Z")
         return abecedario[l].toString()
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val decorView = window.decorView
+        val uiOptions = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+        decorView.systemUiVisibility = uiOptions
     }
 }
