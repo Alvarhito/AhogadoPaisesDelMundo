@@ -195,6 +195,7 @@ class MainActivity : Activity(), View.OnClickListener {
 
         flag.visibility=View.VISIBLE
 
+        
     }
 
     fun SigORein(){
