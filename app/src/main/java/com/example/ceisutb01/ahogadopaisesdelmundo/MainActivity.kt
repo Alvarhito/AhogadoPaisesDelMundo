@@ -407,6 +407,7 @@ class MainActivity : Activity(), View.OnClickListener {
                     seccion = 2
                 }
             }
+            
         }else{
             respuesta.text="La respuesta es "+Palabra
             if(!conInternet) {
