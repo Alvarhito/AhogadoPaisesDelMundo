@@ -12,13 +12,11 @@ import com.bumptech.glide.Glide
 
 import android.widget.Button
 import android.widget.TextView
-import android.graphics.BitmapFactory
-import android.graphics.Bitmap
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.file.FileToStreamDecoder
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import android.graphics.Color
+import android.graphics.*
 import android.os.Handler
 import android.widget.Toast
 
@@ -195,7 +193,7 @@ class MainActivity : Activity(), View.OnClickListener {
 
         flag.visibility=View.VISIBLE
 
-        
+
     }
 
     fun SigORein(){
@@ -251,10 +249,12 @@ class MainActivity : Activity(), View.OnClickListener {
     fun init(number: Int) {
 
         val For_Letter = ForLetter as LinearLayout
+
         for (i in 0..number - 1) {
             val tv_dynamic = TextView(this)
             tv_dynamic.textSize = 25f
             tv_dynamic.text = "__ "
+            tv_dynamic.setTypeface(Typeface.SERIF);
             //tv_dynamic.setTextColor(Color.WHITE)
             For_Letter.addView(tv_dynamic)
             textviews.add(tv_dynamic)
