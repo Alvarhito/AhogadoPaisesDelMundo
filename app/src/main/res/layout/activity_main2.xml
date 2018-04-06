@@ -39,17 +39,20 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/playButton3"
-        android:layout_width="223dp"
-        android:layout_height="58dp"
-        android:text="puntuacion maxima"
-        android:textSize="18sp"
-        android:visibility="invisible"
+        android:id="@+id/Multiplayer"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="178dp"
+        android:layout_height="69dp"
+        android:background="@mipmap/ic_nuevo_juego"
+        android:fontFamily="serif"
+        android:text="Multijugador"
+        android:textSize="19sp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.61" />
+        app:layout_constraintVertical_bias="0.62" />
 
     <Button
         android:id="@+id/creditosButton"
@@ -215,5 +218,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.01999998"
         app:srcCompat="@mipmap/ic_nombre2" />
+
+
 
 </android.support.constraint.ConstraintLayout>

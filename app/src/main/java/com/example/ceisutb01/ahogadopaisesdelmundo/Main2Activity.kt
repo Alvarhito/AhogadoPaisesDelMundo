@@ -20,6 +20,10 @@ import kotlinx.android.synthetic.main.activity_main2.*
 import java.util.ArrayList
 import android.widget.LinearLayout
 import android.graphics.Bitmap
+import android.widget.Button
+import com.google.firebase.iid.FirebaseInstanceId
+
+
 
 class Main2Activity : AppCompatActivity() {
     var nombre="No hay nada"
@@ -65,6 +69,7 @@ class Main2Activity : AppCompatActivity() {
             boton_vs.putExtra("Pais", nombre)
             startActivity(boton_vs)*/
         }
+
         creditosButton.setOnClickListener{
             val boton_vs = Intent(this, Main3Activity::class.java)
             startActivity(boton_vs)
@@ -75,6 +80,12 @@ class Main2Activity : AppCompatActivity() {
             val boton_vs = Intent(this, MainActivity::class.java)
             startActivity(boton_vs)
         }*/
+
+        Multiplayer.setOnClickListener{
+            val boton = Intent(this, Main4Activity::class.java)
+            startActivity(boton)
+                recreate()
+        }
     }
 
     override fun onResume() {
