@@ -15,8 +15,14 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_main4.*
 
 
+object Constants {
+    @JvmStatic
+    val FIREBASE_ITEM: String = "hola"
+}
 class Main4Activity : AppCompatActivity() {
     var ref = FirebaseDatabase.getInstance().reference
+    val newqst = ref.child(Constants.FIREBASE_ITEM).push()
+    val aux=newqst.setValue("jhjh")
     var mensajeRef = ref.child("Servidor")
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,6 +31,8 @@ class Main4Activity : AppCompatActivity() {
         //modifica("Funciona")
 
     }
+
+
     /*
     fun onTokenRefresh() {
         val refreshedToken = FirebaseInstanceId.getInstance().token
@@ -50,6 +58,7 @@ class Main4Activity : AppCompatActivity() {
 
 
         mensajeRef.addValueEventListener(object : ValueEventListener {
+
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val value = dataSnapshot.getValue(String::class.java)
                 val prueba= prueba as TextView
