@@ -1,5 +1,6 @@
 package com.example.ceisutb01.ahogadopaisesdelmundo
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -22,21 +23,32 @@ object Constants {
 }
 class Main4Activity : AppCompatActivity() {
     var ref = FirebaseDatabase.getInstance().reference
-    val newqst = ref.child(Constants.FIREBASE_ITEM).push()
-    var aaa=newqst
 
     var usuario=ale()
-    //val aux0=newqst.child(usuario) .setValue(newqst.key)
-    val aux=newqst.child("player1") .setValue("Primer Jugador")
-    val aux1=newqst.child("player2").setValue("Segundo Jugador")
 
-    var mensajeRef = ref.child(usuario)
-    var auu=mensajeRef.setValue(newqst.key)
+    var mensajeRef = ref.child("Usuarios").child(usuario)
+    var auu=mensajeRef.setValue("")
+
+    var otro=mensajeRef
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main4)
+
+        Servidor.setOnClickListener {
+            val newqst = ref.child(Constants.FIREBASE_ITEM).push()
+            val aux=newqst.child("player1") .setValue("Primer Jugador")
+            val aux1=newqst.child("player2").setValue("Segundo Jugador")
+            val auu=mensajeRef.setValue(newqst.key)
+        }
+        Cliente.setOnClickListener {
+
+            val mensaje = editText.getText().toString()
+            mensajeRef = ref.child("Usuarios").child(mensaje)
+
+        }
+
 
     }
 
@@ -61,13 +73,13 @@ class Main4Activity : AppCompatActivity() {
         return  num
     }
 
-
+    /*
     override fun onDestroy() {
         //var hola0=newqst.child(usuario).removeValue()
         var hola=newqst.child("player1").removeValue()
         var hola1=newqst.child("player2").removeValue()
         super.onDestroy()
-    }
+    }*/
     override fun onResume() {
         super.onResume()
         val decorView = window.decorView
@@ -84,8 +96,8 @@ class Main4Activity : AppCompatActivity() {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val value = dataSnapshot.getValue(String::class.java)
-                val prueba= prueba as TextView
-                prueba.text=value
+                //val prueba= prueba as TextView
+                otro.setValue(value)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
