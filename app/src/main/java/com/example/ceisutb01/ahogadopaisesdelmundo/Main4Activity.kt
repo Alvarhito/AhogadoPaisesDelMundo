@@ -1,6 +1,7 @@
 package com.example.ceisutb01.ahogadopaisesdelmundo
 
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.Typeface
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -44,6 +45,13 @@ class Main4Activity : AppCompatActivity() {
 
     var mensajeRef = ref.child("Usuarios").child(usuario)
     var auu=mensajeRef.setValue("")
+    var Existe=ref
+    var Espera=ref
+    var esp=true
+
+    var PuedeEntrar=false
+
+    var quien=""
 
     var newqst=FirebaseDatabase.getInstance().reference
     var exi=true
@@ -53,27 +61,54 @@ class Main4Activity : AppCompatActivity() {
         setContentView(R.layout.activity_main4)
 
         Servidor.setOnClickListener {
+            quien="s"
             var l = ArrayList<Int>()
             l.add(0)
+            val Prueba= prueba as TextView
 
             newqst = ref.child("Servicio").child(usuario)
+            newqst.child("Esperar").child("p1").setValue("1")
+            newqst.child("Esperar").child("p2").setValue("0")
+            Espera=ref.child("Servicio").child(usuario).child("Esperar").child("p2")
             val aux=newqst.child("player1").setValue(l)
             val aux1=newqst.child("player2").setValue(l)
             //val auu=mensajeRef.setValue(newqst.key)
             val auun=mensajeRef.setValue(newqst.key)
             select()
-            go("player1","player2",usuario)
+            Cliente.visibility=View.INVISIBLE
+            Cliente.isEnabled=false
+            Servidor.text="Ir"
+            //Prueba.text="Antes: "+Espera.key
+            Prueba.text="Sala: "+usuario
+            Handler().postDelayed(Runnable {
+                PuedeEntrar=true
+            }, 6000)
+            Servidor.isEnabled=false
+            Servidor.setTextColor(Color.GRAY)
+            E.text="Esperando oponente..."
         }
         Cliente.setOnClickListener {
-            val mensaje = editText.getText().toString()
-            val otro = ref.child("Usuarios").child(mensaje)
-            onResume()
-            Handler().postDelayed(Runnable {
-                val Prueba= prueba as TextView
-                if(exi) {
-                    Prueba.text=otro.key
-                    mensajeRef.setValue(otro.key)
-                    Cliente.setOnClickListener {
+            quien="c"
+
+            Servidor.visibility=View.INVISIBLE
+            editText.visibility=View.VISIBLE
+            Cliente.setOnClickListener {
+                val mensaje = editText.getText().toString()
+                val otro = ref.child("Usuarios").child(mensaje)
+                Existe=Existe.child("Servicio")
+                onResume()
+                Cliente.isEnabled=false
+                Cliente.setTextColor(Color.GRAY)
+                Handler().postDelayed(Runnable {
+                    val Prueba = prueba as TextView
+                    if (exi) {
+                        Espera=otro.child("Esperar").child("p1")
+                        PuedeEntrar=true
+                        Prueba.text = "Conectado a: "+otro.key
+                        Cliente.text="Ir"
+                        mensajeRef.setValue(otro.key)
+
+                        /////////////////////////////////////////////////////////
                         Fname = Fname.child(mensaje).child("Palabras").child("names")
                         Fcapitals = Fcapitals.child(mensaje).child("Palabras").child("capitals")
                         Fregions = Fregions.child(mensaje).child("Palabras").child("regions")
@@ -132,15 +167,20 @@ class Main4Activity : AppCompatActivity() {
                             }
                         })
 
+                        otro.child("Esperar").child("p2").setValue("1")
                         go("player2", "player1", mensaje)
+                        ////////////////////////////////////////////////////////
+
+                    } else {
+                        Prueba.text = "No existe"
+                        Handler().postDelayed(Runnable {
+                            recreate()
+                        }, 1000)
+
                     }
-                }else{
-                    Prueba.text="No existe"
-                    recreate()
+                }, 2000)
 
-                }
-            },1000)
-
+            }
         }
     }
 
@@ -191,6 +231,7 @@ class Main4Activity : AppCompatActivity() {
             }
         }
     }
+
     fun go(jugador: String,vs: String,sala: String){
         val boton = Intent(this, MainActivity::class.java)
         boton.putExtra("player",jugador)
@@ -321,6 +362,7 @@ class Main4Activity : AppCompatActivity() {
     fun modifica(mensaje: String){
         mensajeRef.setValue(mensaje)
     }
+
     fun ale() :String{
         val random = Random()
         var num=""
@@ -340,27 +382,36 @@ class Main4Activity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        /*
+
         val decorView = window.decorView
         val uiOptions = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
-        decorView.systemUiVisibility = uiOptions*/
+        decorView.systemUiVisibility = uiOptions
 
-        mensajeRef.child("Usuarios").addValueEventListener(object : ValueEventListener {
+        Existe.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val value = dataSnapshot.getValue(String::class.java)
-                val Prueba= prueba as TextView
+                //val t = object : GenericTypeIndicator<ArrayList<String>>() {}
+                //val value = dataSnapshot.getValue(t)
+                //val Prueba= prueba as TextView
                 val mensaje = editText.getText().toString()
                 /*
-                if(!dataSnapshot.child(mensaje).exists()){
-                    exi=false
-                }else{
-                    exi=true
+                exi=false
+                for(i in 0..value!!.size-1){
+                    if(value!![i].toString()==mensaje.toString()){
+                        exi=true
+                        break
+                    }
                 }*/
+
+                if(dataSnapshot.child(mensaje).exists()){
+                    exi=true
+                }else{
+                    exi=false
+                }
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -368,6 +419,49 @@ class Main4Activity : AppCompatActivity() {
                 prueba.text="Error"
             }
         })
+
+
+        Espera.addValueEventListener(object : ValueEventListener {
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if(PuedeEntrar) {
+
+                    //val value = dataSnapshot.getValue(String::class.java)
+                    //val prueba= prueba as TextView
+                    //prueba.text=    "Estoy accediendo a: "+dataSnapshot.key
+                    if (quien == "s") {
+                        if(esp) {
+                            Servidor.isEnabled = true
+                            Servidor.setTextColor(Color.WHITE)
+                            go("player1", "player2", usuario)
+                            esp=false
+                        }
+                    }
+                    if (quien == "c") {
+                        Cliente.isEnabled = true
+                        Cliente.setTextColor(Color.WHITE)
+                    }
+                    /*
+                    if (value == "1") {
+                        if (quien == "s") {
+                            Servidor.isEnabled = true
+                            Servidor.setTextColor(Color.WHITE)
+                        }
+                        if (quien == "c") {
+                            Cliente.isEnabled = true
+                            Cliente.setTextColor(Color.WHITE)
+                        }
+                    }
+                    */
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                val prueba= prueba as TextView
+                prueba.text="Error"
+            }
+        })
+
     }
 
 }

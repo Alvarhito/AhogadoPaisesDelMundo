@@ -30,7 +30,6 @@ import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.activity_main4.*
 
-
 class  MainActivity : Activity(), View.OnClickListener {
 
     var ref = FirebaseDatabase.getInstance().reference
@@ -309,6 +308,12 @@ class  MainActivity : Activity(), View.OnClickListener {
             }
         }
         textviews[VRam].text = Palabra[VRam] + " "
+
+        l[VRam]=1
+        if(sala!="0") {
+            ref.child("Servicio").child(sala).child(jugador).setValue(l)
+        }
+
         termino += 1
     }
 
