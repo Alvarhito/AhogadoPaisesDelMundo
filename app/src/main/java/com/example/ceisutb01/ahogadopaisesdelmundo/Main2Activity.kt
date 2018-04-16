@@ -101,6 +101,7 @@ class Main2Activity : AppCompatActivity() {
     }
 
     fun selectPais() {
+        Multiplayer.visibility=View.INVISIBLE
         cargando.visibility=View.VISIBLE
         TextCargando.visibility=View.VISIBLE
         Fondo.visibility=View.INVISIBLE

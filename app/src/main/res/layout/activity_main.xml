@@ -4,8 +4,170 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/Main"
     android:layout_width="match_parent"
+    android:background="@color/black"
     android:layout_height="match_parent"
     tools:context="com.example.ceisutb01.ahogadopaisesdelmundo.MainActivity">
+
+    <LinearLayout
+        android:id="@+id/ForSpace"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:contextClickable="false"
+        android:fontFamily="serif"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:textAlignment="center"
+        android:translationZ="2dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.77">
+
+        <ImageView
+            android:id="@+id/imageView12"
+            android:layout_width="22dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1"
+            android:src="@color/TransPurple"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/imageView13"
+            android:layout_width="22dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1"
+            android:src="@color/TransPurple"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/imageView14"
+            android:layout_width="22dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1"
+            android:src="@color/TransPurple"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/imageView15"
+            android:layout_width="22dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1"
+            android:scaleType="center"
+            android:src="@color/TransPurple"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/imageView16"
+            android:layout_width="22dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1"
+            android:src="@color/TransPurple"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/imageView7"
+            android:layout_width="22dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1"
+            android:src="@color/TransPurple"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/imageView8"
+            android:layout_width="22dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1"
+            android:src="@color/TransPurple"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/imageView9"
+            android:layout_width="22dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1"
+            android:src="@color/TransPurple"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/imageView10"
+            android:layout_width="22dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1"
+            android:scaleType="center"
+            android:src="@color/TransPurple"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/imageView11"
+            android:layout_width="22dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1"
+            android:src="@color/TransPurple"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/imageView6"
+            android:layout_width="22dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1"
+            android:src="@color/TransPurple"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="22dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1"
+            android:src="@color/TransPurple"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="22dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1"
+            android:src="@color/TransPurple"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="22dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1"
+            android:scaleType="center"
+            android:src="@color/TransPurple"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="22dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1"
+            android:src="@color/TransPurple"
+            android:visibility="invisible" />
+    </LinearLayout>
 
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView2"
@@ -316,24 +478,21 @@
 
     <LinearLayout
         android:id="@+id/ForLetter"
-        android:layout_width="347dp"
-        android:layout_height="49dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
         android:contextClickable="false"
-        android:translationZ="2dp"
         android:fontFamily="serif"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
         android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/horizontalScrollView"
+        android:translationZ="2dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.49"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.88">
+        app:layout_constraintVertical_bias="0.79">
 
     </LinearLayout>
 
@@ -358,32 +517,8 @@
         app:layout_constraintHorizontal_bias="0.506"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.35000002"
-        tools:text="GANASTE" />
-
-    <TextView
-        android:id="@+id/youlosetext"
-        android:layout_width="247dp"
-        android:layout_height="57dp"
-        android:layout_marginBottom="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:fontFamily="serif"
-        android:text="PERDISTE"
-        android:textAlignment="center"
-        android:textColor="@android:color/background_dark"
-        android:textSize="36sp"
-        android:translationZ="4dp"
-        android:typeface="normal"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.506"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.36"
-        tools:text="PERDISTE" />
+        tools:text="GANASTE" />
 
     <Button
         android:id="@+id/Menu"
@@ -415,6 +550,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.6" />
+
+    <TextView
+        android:id="@+id/youlosetext"
+        android:layout_width="247dp"
+        android:layout_height="57dp"
+        android:layout_marginBottom="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:fontFamily="serif"
+        android:text="PERDISTE"
+        android:textAlignment="center"
+        android:textColor="@android:color/background_dark"
+        android:textSize="36sp"
+        android:translationZ="4dp"
+        android:typeface="normal"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.36"
+        tools:text="PERDISTE" />
 
     <TextView
         android:id="@+id/textend"
@@ -489,7 +648,7 @@
     <ImageView
         android:id="@+id/VenI"
         android:layout_width="410dp"
-        android:layout_height="656dp"
+        android:layout_height="730dp"
         android:src="@mipmap/game_over"
         android:translationZ="1dp"
         android:visibility="invisible"

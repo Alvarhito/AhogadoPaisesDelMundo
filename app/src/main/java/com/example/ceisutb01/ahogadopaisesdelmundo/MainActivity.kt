@@ -1,5 +1,7 @@
 package com.example.ceisutb01.ahogadopaisesdelmundo
 
+import android.annotation.SuppressLint
+import android.app.ActionBar
 import android.os.Bundle
 import android.view.View
 import java.util.Random
@@ -9,7 +11,6 @@ import android.content.Intent
 import android.widget.*
 import kotlinx.android.synthetic.main.activity_main.*
 import com.bumptech.glide.Glide
-
 import android.widget.Button
 import android.widget.TextView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -17,12 +18,22 @@ import com.bumptech.glide.load.resource.file.FileToStreamDecoder
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.graphics.*
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Handler
+import android.provider.CalendarContract
+import android.view.WindowManager
 import android.widget.Toast
-
+import com.example.ceisutb01.ahogadopaisesdelmundo.R.color.TransPurple
+import com.example.ceisutb01.ahogadopaisesdelmundo.R.color.colorAccent
+import com.google.firebase.database.*
+import kotlinx.android.synthetic.main.activity_main.view.*
+import kotlinx.android.synthetic.main.activity_main4.*
 
 
 class  MainActivity : Activity(), View.OnClickListener {
+
+    var ref = FirebaseDatabase.getInstance().reference
 
     val letter= arrayOf(("CHAD"),("OMÁN"),("PERÚ"),("NAURU"),("TOGO"),("TONGO"),("TÚNEZ"),("SUIZA"),("SIRIA"),("SAMOA"),("NÍGER"),("NEPAL"),("BENÍN"),("KENIA"),("BUTÁN"),
                         ("ANGOLA"),("ANDORRA"),("ARMENIA"),("AUSTRIA"),("BAHAMAS"),("BARÉIN"),("BÉLGICA"),("CAMERÚN"),("CANADÁ"),("ECUADOR"),("ESPAÑA"),("GAMBIA"),("KOSOVO"),("KUWAIT"),("POLONIA"),
@@ -53,6 +64,13 @@ class  MainActivity : Activity(), View.OnClickListener {
 
     var numNivel=0
 
+    var jugadorVs=""
+    var jugador=""
+    var sala=""
+
+    var l = ArrayList<Int>()
+    var lVs = ArrayList<Int>()
+
     //val agua= arrayOf(Agua1 as TextView,Agua2 as TextView,Agua3 as TextView,Agua4 as TextView,Agua5 as TextView,Agua5 as TextView,Agua6 as TextView,Agua71 as TextView,Agua72 as TextView,Agua73 as TextView)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,6 +88,44 @@ class  MainActivity : Activity(), View.OnClickListener {
         conInternet=intent.extras.getBoolean("conInternet")
 
         if(conInternet){
+            sala=intent.extras.getString("sala", "0")
+            jugador=intent.extras.getString("player","0")
+            jugadorVs=intent.extras.getString("playerVs","0")
+
+            if(sala!="0"){
+
+                ref.child("Servicio").child(sala).child(jugadorVs).addValueEventListener(object : ValueEventListener {
+
+                    @SuppressLint("ResourceAsColor")
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        val t = object : GenericTypeIndicator<ArrayList<Int>>() {}
+                        val value = dataSnapshot.getValue(t)
+                        lVs=value!!
+                        val paraEspacio=ForSpace as LinearLayout
+
+                        val For_Letter = ForLetter as LinearLayout
+                        var con=0
+                        for(i in 0..lVs.size-1){
+                            if(lVs[i]==1){
+                                con+=1
+                                For_Letter.getChildAt(i).setBackgroundColor(Color.BLUE)
+                                //For_Letter.getChildAt(i).setBackgroundColor(Color.TRANSPARENT)
+                                //paraEspacio.getChildAt(i).visibility=View.VISIBLE
+                            }
+                        }
+                        if(con==lVs.size){
+                            NumVidas=1
+                            verificaPerdio()
+                        }
+                    }
+
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        val prueba= prueba as TextView
+                        prueba.text="Error"
+                    }
+                })
+            }
+
             //val lista = intent.getSerializableExtra("miLista") as ArrayList<String>
             names= intent.getStringArrayListExtra("names")as ArrayList<String>
             capitals= intent.getStringArrayListExtra("capitals") as ArrayList<String>
@@ -88,8 +144,9 @@ class  MainActivity : Activity(), View.OnClickListener {
             puntitos.text = "Puntos: " + Tpuntos.toString()
             //prueba.text=Tpuntos.toString()
 
-
-            guardarPreferencias()
+            if(sala=="0") {
+                guardarPreferencias()
+            }
 
             if(conInternet){
                 nombre=SetWordWhitInternet()
@@ -108,7 +165,9 @@ class  MainActivity : Activity(), View.OnClickListener {
             if(continuar){
                 cargarPreferencias()
             }else{
-                guardarPreferencias()
+                if(sala=="0"){
+                    guardarPreferencias()
+                }
             }
 
             num = (random.nextInt(final - inicial)) + inicial
@@ -132,7 +191,6 @@ class  MainActivity : Activity(), View.OnClickListener {
             //prueba.text=nombre
             init(Palabra.length)
             //prueba.text=nombre
-
         }
         setBtn()
 
@@ -160,7 +218,9 @@ class  MainActivity : Activity(), View.OnClickListener {
                 Tpuntos=0
                 seccion=1
 
-                guardarPreferencias()
+                if(sala=="0") {
+                    guardarPreferencias()
+                }
             }else{
                 SigORein()
             }
@@ -200,6 +260,12 @@ class  MainActivity : Activity(), View.OnClickListener {
         val boton_vs = Intent(this, MainActivity::class.java)
         boton_vs.putExtra("conInternet", conInternet)
         if(conInternet){
+            if(sala!="0"){
+                boton_vs.putExtra("player",jugador)
+                boton_vs.putExtra("sala",sala)
+                boton_vs.putExtra("playerVs",jugadorVs)
+            }
+
             boton_vs.putExtra("names",names)
             boton_vs.putExtra("capitals",capitals)
             boton_vs.putExtra("regions",regions)
@@ -249,18 +315,35 @@ class  MainActivity : Activity(), View.OnClickListener {
     fun init(number: Int) {
 
         val For_Letter = ForLetter as LinearLayout
+        val paraEspacio=ForSpace as LinearLayout
 
+
+        for (i in 0..(15 - number)-1){
+            paraEspacio.removeView(paraEspacio.getChildAt(0
+            ))
+        }
+
+        val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        params.marginEnd=3
         for (i in 0..number - 1) {
+            //paraEspacio.getChildAt(i).visibility=View.VISIBLE
             val tv_dynamic = TextView(this)
+            tv_dynamic.setLayoutParams(params)
             tv_dynamic.textSize = 25f
-            tv_dynamic.text = "__ "
+            tv_dynamic.text = "__"
             tv_dynamic.setTypeface(Typeface.SERIF);
             //tv_dynamic.setTextColor(Color.WHITE)
             For_Letter.addView(tv_dynamic)
             textviews.add(tv_dynamic)
+            l.add(0)
+        }
+        if(sala!="0") {
+            ref.child("Servicio").child(sala).child(jugador).setValue(l)
         }
         //textviews[0].text=nombre
-
     }
 
     override fun onClick(v: View) {
@@ -271,20 +354,28 @@ class  MainActivity : Activity(), View.OnClickListener {
 
        // var prueba= Prueba as TextView
         //prueba.text=""
-
         for (i in Palabra) {
 
             //prueba.text =prueba.getText().toString() + i.toString()+" "+b.getText().toString()
 
             if (b.getText().toString() == i.toString() || setToTilde(b.getText().toString())==i.toString()) {
                 if (textviews[conta].getText().toString() != b.getText().toString() + " ") {
-                    textviews[conta].text = i + " "
+                    l[conta]=1
+                    if(i=='I'){
+                        textviews[conta].text = " "+ i + "  "
+                    }else{
+                        textviews[conta].text = i + " "
+                    }
                     entro = true
                     termino += 1
                 }
             }
             conta+=1
         }
+        if(sala!="0") {
+            ref.child("Servicio").child(sala).child(jugador).setValue(l)
+        }
+
         if (entro == false) {
             verificaPerdio()
             auxPuntos = 5;
@@ -367,7 +458,7 @@ class  MainActivity : Activity(), View.OnClickListener {
         val prefs = getSharedPreferences("preferencias", Context.MODE_PRIVATE)
         inicial = prefs.getString("i", "0").toInt()
         final = prefs.getString("f","14").toInt()
-        Tpuntos=prefs.getString("puntos","0").toInt()
+        Tpuntos=prefs.getString("puntos","0 ").toInt()
         seccion=prefs.getString("s","1").toInt()
        // Toast.makeText(this, preferencias1, Toast.LENGTH_SHORT).show()
     }
@@ -450,8 +541,9 @@ class  MainActivity : Activity(), View.OnClickListener {
 
 
         respuesta.visibility=View.VISIBLE
-
-        guardarPreferencias()
+        if(sala=="0") {
+            guardarPreferencias()
+        }
     }
 
     fun setBtn() {
