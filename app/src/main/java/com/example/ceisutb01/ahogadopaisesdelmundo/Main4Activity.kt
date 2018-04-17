@@ -62,14 +62,16 @@ class Main4Activity : AppCompatActivity() {
 
         Servidor.setOnClickListener {
             quien="s"
-            var l = ArrayList<Int>()
-            l.add(0)
+            var l= arrayListOf<Int>(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
             val Prueba= prueba as TextView
 
             newqst = ref.child("Servicio").child(usuario)
             newqst.child("Esperar").child("p1").setValue("1")
             newqst.child("Esperar").child("p2").setValue("0")
-            Espera=ref.child("Servicio").child(usuario).child("Esperar").child("p2")
+
+            newqst.child("Puntos").child("puntos1").setValue("0")
+            newqst.child("Puntos").child("puntos2").setValue("0")
+
             val aux=newqst.child("player1").setValue(l)
             val aux1=newqst.child("player2").setValue(l)
             //val auu=mensajeRef.setValue(newqst.key)
@@ -102,7 +104,7 @@ class Main4Activity : AppCompatActivity() {
                 Handler().postDelayed(Runnable {
                     val Prueba = prueba as TextView
                     if (exi) {
-                        Espera=otro.child("Esperar").child("p1")
+                        Espera=ref.child("Servicio").child(mensaje).child("Esperar").child("p1")
                         PuedeEntrar=true
                         Prueba.text = "Conectado a: "+otro.key
                         Cliente.text="Ir"
@@ -167,7 +169,7 @@ class Main4Activity : AppCompatActivity() {
                             }
                         })
 
-                        otro.child("Esperar").child("p2").setValue("1")
+                        ref.child("Servicio").child(mensaje).child("Esperar").child("p2").setValue("1")
                         go("player2", "player1", mensaje)
                         ////////////////////////////////////////////////////////
 
@@ -252,6 +254,7 @@ class Main4Activity : AppCompatActivity() {
 
             startActivity(boton)
             finish()
+            //onDestroy()
         },1000)
 
     }
@@ -428,18 +431,26 @@ class Main4Activity : AppCompatActivity() {
 
                     //val value = dataSnapshot.getValue(String::class.java)
                     //val prueba= prueba as TextView
-                    //prueba.text=    "Estoy accediendo a: "+dataSnapshot.key
+                    //
+                    var value=dataSnapshot.child("Servicio").child(usuario).child("Esperar").child("p2").getValue(String::class.java)
+                     //prueba.text="Estoy accediendo a: "+
+
                     if (quien == "s") {
-                        if(esp) {
-                            Servidor.isEnabled = true
-                            Servidor.setTextColor(Color.WHITE)
-                            go("player1", "player2", usuario)
-                            esp=false
+                        value=dataSnapshot.child("Servicio").child(usuario).child("Esperar").child("p2").getValue(String::class.java)
+                        if(value=="1") {
+                            if (esp) {
+                                //Servidor.isEnabled = true
+                                //Servidor.setTextColor(Color.WHITE)
+                                go("player1", "player2", usuario)
+                                esp = false
+                            }
+                             }
+                    }else if (quien == "c") {
+                        value=dataSnapshot.child("Servicio").child(usuario).child("Esperar").child("p1").getValue(String::class.java)
+                        if(value=="1"){
+                            //Cliente.isEnabled = true
+                            //Cliente.setTextColor(Color.WHITE)
                         }
-                    }
-                    if (quien == "c") {
-                        Cliente.isEnabled = true
-                        Cliente.setTextColor(Color.WHITE)
                     }
                     /*
                     if (value == "1") {

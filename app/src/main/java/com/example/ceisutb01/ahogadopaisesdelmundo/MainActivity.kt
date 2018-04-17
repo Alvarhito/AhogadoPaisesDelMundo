@@ -33,6 +33,7 @@ import kotlinx.android.synthetic.main.activity_main4.*
 class  MainActivity : Activity(), View.OnClickListener {
 
     var ref = FirebaseDatabase.getInstance().reference
+    var Espera=ref
 
     val letter= arrayOf(("CHAD"),("OMÁN"),("PERÚ"),("NAURU"),("TOGO"),("TONGO"),("TÚNEZ"),("SUIZA"),("SIRIA"),("SAMOA"),("NÍGER"),("NEPAL"),("BENÍN"),("KENIA"),("BUTÁN"),
                         ("ANGOLA"),("ANDORRA"),("ARMENIA"),("AUSTRIA"),("BAHAMAS"),("BARÉIN"),("BÉLGICA"),("CAMERÚN"),("CANADÁ"),("ECUADOR"),("ESPAÑA"),("GAMBIA"),("KOSOVO"),("KUWAIT"),("POLONIA"),
@@ -70,6 +71,12 @@ class  MainActivity : Activity(), View.OnClickListener {
     var l = ArrayList<Int>()
     var lVs = ArrayList<Int>()
 
+    var ir=false
+
+    var puntosEnemigo=""
+    var ganar=true
+    var otroJugador=false
+
     //val agua= arrayOf(Agua1 as TextView,Agua2 as TextView,Agua3 as TextView,Agua4 as TextView,Agua5 as TextView,Agua5 as TextView,Agua6 as TextView,Agua71 as TextView,Agua72 as TextView,Agua73 as TextView)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,6 +99,8 @@ class  MainActivity : Activity(), View.OnClickListener {
             jugadorVs=intent.extras.getString("playerVs","0")
 
             if(sala!="0"){
+                ref.child("Servicio").child(sala).child("Esperar").child("p1").setValue("0")
+                ref.child("Servicio").child(sala).child("Esperar").child("p2").setValue("0")
 
                 ref.child("Servicio").child(sala).child(jugadorVs).addValueEventListener(object : ValueEventListener {
 
@@ -100,6 +109,7 @@ class  MainActivity : Activity(), View.OnClickListener {
                         val t = object : GenericTypeIndicator<ArrayList<Int>>() {}
                         val value = dataSnapshot.getValue(t)
                         lVs=value!!
+
                         val paraEspacio=ForSpace as LinearLayout
 
                         val For_Letter = ForLetter as LinearLayout
@@ -107,14 +117,29 @@ class  MainActivity : Activity(), View.OnClickListener {
                         for(i in 0..lVs.size-1){
                             if(lVs[i]==1){
                                 con+=1
-                                For_Letter.getChildAt(i).setBackgroundColor(Color.BLUE)
+                                if(For_Letter.getChildAt(i)!=null) {
+                                    For_Letter.getChildAt(i).setBackgroundColor(Color.BLUE)
+                                }
                                 //For_Letter.getChildAt(i).setBackgroundColor(Color.TRANSPARENT)
                                 //paraEspacio.getChildAt(i).visibility=View.VISIBLE
                             }
                         }
-                        if(con==lVs.size){
+
+                        if(con==Palabra.length){
                             NumVidas=1
-                            verificaPerdio()
+                            if(ganar){
+                                otroJugador=true
+                                verificaPerdio()
+                            }else{
+                                val respuesta2= textend2 as TextView
+                                val respuesta3= textend3 as TextView
+                                val respuesta= textend as TextView
+
+                                respuesta.text = "PUNTOS"
+                                respuesta2.text = "TU: " + Tpuntos
+                                respuesta3.text = "OPONENTE: " + puntosEnemigo
+                                Siguente.visibility=View.VISIBLE
+                            }
                         }
                     }
 
@@ -199,12 +224,14 @@ class  MainActivity : Activity(), View.OnClickListener {
             startActivity(boton_vs)
             finish()
         }
+
         Menu.setOnClickListener {
             val boton_vs = Intent(this, Main2Activity::class.java)
             boton_vs.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(boton_vs)
             finish()
         }
+
         Siguente.setOnClickListener {
             if((numNivel)>=8){
                 Siguente.visibility=View.INVISIBLE
@@ -221,7 +248,45 @@ class  MainActivity : Activity(), View.OnClickListener {
                     guardarPreferencias()
                 }
             }else{
-                SigORein()
+                if(sala=="0"){
+                    SigORein()
+                }else{
+                    val respuesta2= textend2 as TextView
+                    val respuesta3= textend3 as TextView
+                    val respuesta= textend as TextView
+
+                    flag.visibility=View.INVISIBLE
+                    if(otroJugador) {
+                        respuesta.text = "PUNTOS"
+                        respuesta2.text = "TU: " + Tpuntos
+                        respuesta3.text = "OPONENTE: " + puntosEnemigo
+                    }else{
+                        respuesta.visibility=View.INVISIBLE
+                        respuesta2.text="Esperando oponente..."
+                        respuesta3.visibility=View.INVISIBLE
+                        Siguente.visibility=View.INVISIBLE
+                        if (jugador == "player1") {
+                            ref.child("Servicio").child(sala).child("Esperar").child("p1").setValue("1")
+                        }else if(jugador == "player2"){
+                            ref.child("Servicio").child(sala).child("Esperar").child("p2").setValue("1")
+                        }
+                        ir=true
+                    }
+
+                    Siguente.setOnClickListener {
+                        respuesta.visibility=View.INVISIBLE
+                        respuesta2.text="Esperando oponente..."
+                        respuesta3.visibility=View.INVISIBLE
+
+                        if (jugador == "player1") {
+                            ref.child("Servicio").child(sala).child("Esperar").child("p1").setValue("1")
+                        }else if(jugador == "player2"){
+                            ref.child("Servicio").child(sala).child("Esperar").child("p2").setValue("1")
+                        }
+                        ir=true
+
+                    }
+                }
             }
 
         }
@@ -231,6 +296,7 @@ class  MainActivity : Activity(), View.OnClickListener {
             //finish()
             //m.selectPais()
         }
+
         Ayuda.setOnClickListener {
             Ayuda.isEnabled = false
             ayudando()
@@ -260,6 +326,8 @@ class  MainActivity : Activity(), View.OnClickListener {
         boton_vs.putExtra("conInternet", conInternet)
         if(conInternet){
             if(sala!="0"){
+                var r= arrayListOf<Int>(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+                ref.child("Servicio").child(sala).child(jugadorVs).setValue(r)
                 boton_vs.putExtra("player",jugador)
                 boton_vs.putExtra("sala",sala)
                 boton_vs.putExtra("playerVs",jugadorVs)
@@ -278,10 +346,9 @@ class  MainActivity : Activity(), View.OnClickListener {
         boton_vs.putExtra("Secion", seccion)
         boton_vs.putExtra("Continuar",false)
 
-
         startActivity(boton_vs)
-        onDestroy()
         finish()
+        onDestroy()
     }
 
     fun SetWordWhitInternet():String{
@@ -345,9 +412,12 @@ class  MainActivity : Activity(), View.OnClickListener {
             textviews.add(tv_dynamic)
             l.add(0)
         }
-        if(sala!="0") {
-            ref.child("Servicio").child(sala).child(jugador).setValue(l)
-        }
+        l.add(0)
+        l.add(0)
+        l.add(0)
+        //if(sala!="0") {
+        //    ref.child("Servicio").child(sala).child(jugador).setValue(l)
+        //}
         //textviews[0].text=nombre
     }
 
@@ -469,6 +539,14 @@ class  MainActivity : Activity(), View.OnClickListener {
     }
 
     fun Buttonoff(gano: Boolean) {
+        ganar=gano
+
+        if (jugador == "player1") {
+            ref.child("Servicio").child(sala).child("Puntos").child("puntos1").setValue(Tpuntos.toString())
+        }else if(jugador == "player2"){
+            ref.child("Servicio").child(sala).child("Puntos").child("puntos2").setValue(Tpuntos.toString())
+        }
+
         val menu = Menu as Button
         val ayuda = Ayuda as Button
         val For_Letterabc = Vocales as LinearLayout
@@ -492,6 +570,7 @@ class  MainActivity : Activity(), View.OnClickListener {
 
         menu2.visibility = View.VISIBLE
         if(gano){
+            otroJugador=true
             respuesta.text="Exacto, la respuesta es "+Palabra
             sigieunte.visibility = View.VISIBLE
 
@@ -506,15 +585,28 @@ class  MainActivity : Activity(), View.OnClickListener {
             }
             
         }else{
+            if(sala!="0") {
+                sigieunte.visibility = View.VISIBLE
+
+                if(numNivel<8) {
+                    if (seccion == 2) {
+                        inicial = final + 1
+                        final = inicial + 14
+                        seccion = 1
+                    } else {
+                        seccion = 2
+                    }
+                }
+            }else{
+                inicial=0
+                final=14
+                Tpuntos=0
+                seccion=1
+            }
             respuesta.text="La respuesta es "+Palabra
             if(!conInternet) {
                 reiniciar.visibility = View.VISIBLE
             }
-
-            inicial=0
-            final=14
-            Tpuntos=0
-            seccion=1
 
         }
 
@@ -525,7 +617,7 @@ class  MainActivity : Activity(), View.OnClickListener {
 
             //prueba.text=flags[num]
             var url="http://flagpedia.net/data/flags/w580/"+flags[num].toLowerCase()+".png"
-            Glide.with(this).load(url).into(flag)
+            //Glide.with(this).load(url).into(flag)
 
             Flag.visibility=View.VISIBLE
         }else{
@@ -602,5 +694,56 @@ class  MainActivity : Activity(), View.OnClickListener {
                 or View.SYSTEM_UI_FLAG_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
         decorView.systemUiVisibility = uiOptions
+
+        Espera.addValueEventListener(object : ValueEventListener {
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                var value=dataSnapshot.child("Servicio").child(sala).child("Esperar").child("p2").getValue(String::class.java)
+                if (jugador == "player1") {
+                    value=dataSnapshot.child("Servicio").child(sala).child("Puntos").child("puntos2").getValue(String::class.java)
+                    puntosEnemigo=value!!
+                }else if (jugador == "player2") {
+                    value=dataSnapshot.child("Servicio").child(sala).child("Puntos").child("puntos1").getValue(String::class.java)
+                    puntosEnemigo=value!!
+                }
+
+                if(ir==true) {
+                    //val value = dataSnapshot.getValue(String::class.java)
+                    //val prueba= prueba as TextView
+                    //
+
+                    //prueba.text="Estoy accediendo a: "+
+
+                    if (jugador == "player1") {
+                        value=dataSnapshot.child("Servicio").child(sala).child("Esperar").child("p2").getValue(String::class.java)
+                        if(value=="1") {
+                            if(ir) {
+                                Handler().postDelayed(Runnable {
+                                    SigORein()
+                                    ir=false
+                                }, 1000)
+                            }
+                        }
+                    }else if (jugador == "player2") {
+                        value=dataSnapshot.child("Servicio").child(sala).child("Esperar").child("p1").getValue(String::class.java)
+                        if(value=="1"){
+                            if(ir) {
+                                Handler().postDelayed(Runnable {
+                                    SigORein()
+                                    ir=false
+                                }, 1000)
+                            }
+                            //Cliente.isEnabled = true
+                            //Cliente.setTextColor(Color.WHITE)
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                val prueba= prueba as TextView
+                prueba.text="Error"
+            }
+        })
     }
 }
