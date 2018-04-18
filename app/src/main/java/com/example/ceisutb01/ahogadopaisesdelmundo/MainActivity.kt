@@ -234,10 +234,36 @@ class  MainActivity : Activity(), View.OnClickListener {
 
         Siguente.setOnClickListener {
             if((numNivel)>=8){
-                Siguente.visibility=View.INVISIBLE
-                prueba.text="Felicidades, Ganaste el juego"
+                Siguente.visibility = View.INVISIBLE
+                if(sala=="0") {
+                    prueba.text = "Felicidades, Ganaste el juego"
+                    GanasteJuego()
+                }else{
+                    val respuesta2= textend2 as TextView
+                    val respuesta3= textend3 as TextView
+                    val respuesta= textend as TextView
+                    val p = youlosetext as TextView
+                    val g= youwintext as TextView
 
-                GanasteJuego()
+
+                    if(Tpuntos > puntosEnemigo.toInt()){
+                        Glide.with(this).load(R.mipmap.ic_trophy_gold).into(flag)
+                        p.visibility=View.INVISIBLE
+                        g.visibility=View.VISIBLE
+                        flag.visibility=View.VISIBLE
+
+                    }else if(Tpuntos < puntosEnemigo.toInt()){
+                        g.visibility=View.INVISIBLE
+                        p.visibility=View.VISIBLE
+                    }else{
+                        p.text="¡EMPATE!"
+                        g.visibility=View.INVISIBLE
+                        p.visibility=View.VISIBLE
+                    }
+                    respuesta.text = "FIN DEL JUEGO"
+                    respuesta2.text = "TUS PUNTOS: " + Tpuntos
+                    respuesta3.text = "PUNTOS OPONENTE: " + puntosEnemigo
+                }
 
                 inicial=0
                 final=14
@@ -364,9 +390,10 @@ class  MainActivity : Activity(), View.OnClickListener {
         var aux = true
         while (aux) {
             aux = false
+
             for (i in 0..Palabra.length - 1) {
                 //Log.d("TextView",textviews[i].text.toString())
-                if (textviews[i].getText().toString() == Palabra[VRam] + " ") {
+                if ((textviews[i].getText().toString() == Palabra[VRam] + " ") || (textviews[i].getText().toString() == " "+Palabra[VRam] + " ") ) {
                     aux = true
                     VRam = ra.nextInt((Palabra.length - 1) - 0)
                     break;
@@ -437,7 +464,7 @@ class  MainActivity : Activity(), View.OnClickListener {
                 if (textviews[conta].getText().toString() != b.getText().toString() + " ") {
                     l[conta]=1
                     if(i=='I'){
-                        textviews[conta].text = " "+ i + "  "
+                        textviews[conta].text = " "+ i + " "
                     }else{
                         textviews[conta].text = i + " "
                     }
@@ -617,7 +644,9 @@ class  MainActivity : Activity(), View.OnClickListener {
 
             //prueba.text=flags[num]
             var url="http://flagpedia.net/data/flags/w580/"+flags[num].toLowerCase()+".png"
-            //Glide.with(this).load(url).into(flag)
+            if(sala=="0") {
+                Glide.with(this).load(url).into(flag)
+            }
 
             Flag.visibility=View.VISIBLE
         }else{
