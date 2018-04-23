@@ -128,7 +128,7 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="32dp"
                 android:fontFamily="serif"
-                android:text="Base Del Pesonaje:                                                       http://tutozzpatt.blogspot.com.co/2015/07/munequito-editable-psd.html  "
+                android:text="Base Del Personaje:                                                       http://tutozzpatt.blogspot.com.co/2015/07/munequito-editable-psd.html  "
                 android:textAlignment="center"
                 android:textColor="@android:color/background_dark"
                 android:textSize="20sp"
