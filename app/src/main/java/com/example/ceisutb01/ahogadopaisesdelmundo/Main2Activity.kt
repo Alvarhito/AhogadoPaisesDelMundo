@@ -4,25 +4,20 @@ import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Handler
-import android.support.constraint.ConstraintLayout
 import android.util.Log
 import android.view.View
-import android.widget.TextView
-import android.widget.Toast
 import com.github.kittinunf.fuel.android.extension.responseJson
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main2.*
 import java.util.ArrayList
-import android.widget.LinearLayout
-import android.graphics.Bitmap
-import android.widget.Button
-import com.google.firebase.iid.FirebaseInstanceId
-
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.reward.RewardedVideoAd
+import android.widget.Toast
+import com.google.android.gms.ads.reward.RewardItem
 
 
 class Main2Activity : AppCompatActivity() {
@@ -35,9 +30,16 @@ class Main2Activity : AppCompatActivity() {
     var regions = ArrayList<String>()
     var flags = ArrayList<String>()
 
+    lateinit var mAdView : AdView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
+
+        MobileAds.initialize(this,"ca-app-pub-9105229171557561~6203725828")
+
+        mAdView = findViewById(R.id.adView)
+        val adRequest = AdRequest.Builder().build()
+        mAdView.loadAd(adRequest)
 
         val prefs = getSharedPreferences("preferencias", Context.MODE_PRIVATE)
         val Tpuntos=prefs.getString("puntos","0").toInt()
@@ -188,10 +190,8 @@ class Main2Activity : AppCompatActivity() {
                     boton.putExtra("regions",regions)
                     boton.putExtra("flags",flags)
 
-                    Handler().postDelayed(Runnable {
-                        startActivity(boton)
-                        recreate()
-                    },2000)
+                    startActivity(boton)
+                    recreate()
                 }
             }
         }

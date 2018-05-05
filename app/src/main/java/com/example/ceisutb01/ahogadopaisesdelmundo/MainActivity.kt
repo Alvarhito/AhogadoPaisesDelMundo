@@ -1,7 +1,6 @@
 package com.example.ceisutb01.ahogadopaisesdelmundo
 
 import android.annotation.SuppressLint
-import android.app.ActionBar
 import android.os.Bundle
 import android.view.View
 import java.util.Random
@@ -13,24 +12,25 @@ import kotlinx.android.synthetic.main.activity_main.*
 import com.bumptech.glide.Glide
 import android.widget.Button
 import android.widget.TextView
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.file.FileToStreamDecoder
-import android.content.Context.MODE_PRIVATE
-import android.content.SharedPreferences
 import android.graphics.*
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.os.Handler
-import android.provider.CalendarContract
-import android.view.WindowManager
-import android.widget.Toast
-import com.example.ceisutb01.ahogadopaisesdelmundo.R.color.TransPurple
-import com.example.ceisutb01.ahogadopaisesdelmundo.R.color.colorAccent
 import com.google.firebase.database.*
-import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.activity_main4.*
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.reward.RewardedVideoAd
+import android.widget.Toast
+import com.google.android.gms.ads.reward.RewardItem
+import android.view.animation.AnimationUtils
+import android.view.animation.Animation
 
-class  MainActivity : Activity(), View.OnClickListener {
+
+
+
+
+class MainActivity : Activity(), View.OnClickListener {
+
 
     var ref = FirebaseDatabase.getInstance().reference
     var Espera=ref
@@ -79,9 +79,29 @@ class  MainActivity : Activity(), View.OnClickListener {
 
     //val agua= arrayOf(Agua1 as TextView,Agua2 as TextView,Agua3 as TextView,Agua4 as TextView,Agua5 as TextView,Agua5 as TextView,Agua6 as TextView,Agua71 as TextView,Agua72 as TextView,Agua73 as TextView)
 
+    lateinit var mAdView : AdView
+    private lateinit var mRewardedVideoAd: RewardedVideoAd
+    //private val mSmallBang: SmallBang? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        MobileAds.initialize(this,"ca-app-pub-9105229171557561~6203725828")
+
+        mAdView = findViewById(R.id.adView)
+        val adRequest = AdRequest.Builder().build()
+        mAdView.loadAd(adRequest)
+
+        //mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this)
+
+        /*
+        val mAdView = adView as AdView
+        val adRequest = AdRequest.Builder()
+                .build()
+        mAdView.loadAd(adRequest)*/
+
+
 
         nombre =intent.extras.getString("Pais")
 
@@ -200,9 +220,18 @@ class  MainActivity : Activity(), View.OnClickListener {
             nombre=letter[num]
         }
 
+
+
         numNivel=(((final+1)/15)*2)-3+seccion
         numNivel+=1
         prueba.text="Nivel "+numNivel
+
+        if(numNivel==1){
+            Instruc.visibility=View.VISIBLE
+            Instruc.setOnClickListener{
+                Instruc.visibility=View.INVISIBLE
+            }
+        }
 
         if(!conInternet){
             Palabra=nombre
@@ -274,7 +303,7 @@ class  MainActivity : Activity(), View.OnClickListener {
                     guardarPreferencias()
                 }
             }else{
-                if(sala=="0"){
+                if(sala=="0" || conInternet==false){
                     SigORein()
                 }else{
                     val respuesta2= textend2 as TextView
@@ -324,6 +353,7 @@ class  MainActivity : Activity(), View.OnClickListener {
         }
 
         Ayuda.setOnClickListener {
+            //loadRewardedVideoAd()
             Ayuda.isEnabled = false
             ayudando()
             verificaGano()
@@ -403,12 +433,29 @@ class  MainActivity : Activity(), View.OnClickListener {
         }
         textviews[VRam].text = Palabra[VRam] + " "
 
+        val animation = AnimationUtils.loadAnimation(applicationContext, R.anim.abc_fade_out)
+        textviews[VRam].startAnimation(animation)
+
         l[VRam]=1
         if(sala!="0") {
             ref.child("Servicio").child(sala).child(jugador).setValue(l)
         }
 
         termino += 1
+    }
+
+    private fun loadRewardedVideoAd() {
+        mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917",
+                AdRequest.Builder().build())
+        if (mRewardedVideoAd.isLoaded) {
+            mRewardedVideoAd.show()
+        }
+    }
+
+    fun onRewarded(reward: RewardItem) {
+        Toast.makeText(this, "onRewarded! currency: " + reward.type + "  amount: " +
+                reward.amount, Toast.LENGTH_SHORT).show()
+        // Reward the user.
     }
 
     fun init(number: Int) {
@@ -467,7 +514,16 @@ class  MainActivity : Activity(), View.OnClickListener {
                         textviews[conta].text = " "+ i + " "
                     }else{
                         textviews[conta].text = i + " "
+
+                        /*
+                        mSmallBang.bang(textviews[conta], 50, object : SmallBangListener() {
+                            fun onAnimationStart() {}
+                            fun onAnimationEnd() {
+                            }
+                        })*/
                     }
+                    val animation = AnimationUtils.loadAnimation(applicationContext, R.anim.abc_fade_out)
+                    textviews[conta].startAnimation(animation)
                     entro = true
                     termino += 1
                 }
@@ -485,6 +541,10 @@ class  MainActivity : Activity(), View.OnClickListener {
             var puntitos = Puntos as TextView
             Tpuntos += auxPuntos
             puntitos.text = "Puntos: " + Tpuntos.toString()
+
+            val animation = AnimationUtils.loadAnimation(applicationContext, R.anim.abc_fade_out)
+            puntitos.startAnimation(animation)
+
             auxPuntos += 5
         }
         verificaGano()
@@ -493,7 +553,10 @@ class  MainActivity : Activity(), View.OnClickListener {
     fun verificaPerdio() {
         var vidas = Vidas as TextView
         NumVidas = NumVidas - 1
-        vidas.text = "Vidas: " + NumVidas.toString()
+        vidas.text = "Intentos: " + NumVidas.toString()
+        val animation = AnimationUtils.loadAnimation(applicationContext, R.anim.abc_fade_out)
+        vidas.startAnimation(animation)
+
 
         if(NumVidas==4){
             Agua2.visibility=View.VISIBLE
@@ -568,10 +631,12 @@ class  MainActivity : Activity(), View.OnClickListener {
     fun Buttonoff(gano: Boolean) {
         ganar=gano
 
-        if (jugador == "player1") {
-            ref.child("Servicio").child(sala).child("Puntos").child("puntos1").setValue(Tpuntos.toString())
-        }else if(jugador == "player2"){
-            ref.child("Servicio").child(sala).child("Puntos").child("puntos2").setValue(Tpuntos.toString())
+        if(sala!="0") {
+            if (jugador == "player1") {
+                ref.child("Servicio").child(sala).child("Puntos").child("puntos1").setValue(Tpuntos.toString())
+            } else if (jugador == "player2") {
+                ref.child("Servicio").child(sala).child("Puntos").child("puntos2").setValue(Tpuntos.toString())
+            }
         }
 
         val menu = Menu as Button
@@ -717,7 +782,8 @@ class  MainActivity : Activity(), View.OnClickListener {
         super.onResume()
 
         val decorView = window.decorView
-        val uiOptions = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        val uiOptions = (
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_FULLSCREEN
