@@ -29,3 +29,12 @@ Este juego es una version alternativa al juego "el ahorcago" (problemas de derec
 <li>Pierdas o ganes, te mostrara informacion acerca del pais que estabas adivinado, como su nombre, y si estas conectado a internet tambien te mostrara su bandera, su capital, y a la region a la que pertenece.</li>
 </ul>
 
+# Iconos
+<table>
+<td><img src="https://github.com/Alvarhito/AhogadoPaisesDelMundo/blob/master/app/src/main/res/mipmap-hdpi/ic_launcher.png"</td>
+<td><img src="https://github.com/Alvarhito/AhogadoPaisesDelMundo/blob/master/app/src/main/res/mipmap-xhdpi/ic_launcher.png"</td> 
+<td><img src="https://github.com/Alvarhito/AhogadoPaisesDelMundo/blob/master/app/src/main/res/mipmap-xxhdpi/ic_launcher.png"</td>
+<td><img src="https://github.com/Alvarhito/AhogadoPaisesDelMundo/blob/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"</td>
+</table>
+
+
